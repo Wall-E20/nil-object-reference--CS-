@@ -19,6 +19,14 @@ function replace_acts(m, action)
             return HActions[action]
         end
     end
+    if m.playerIndex == 0 then
+        idleanim = math.random(2)
+        if idleanim == 2 and m.action ~= ACT_LAND_NIL then
+            _G.charSelect.character_add_animations(NIL, yay)
+        elseif idleanim == 1 and m.action ~= ACT_LAND_NIL then
+            _G.charSelect.character_add_animations(NIL, yayalt)
+        end
+    end
 end
 --hook_event(HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
 

@@ -185,13 +185,6 @@ _G.ACT_STANDING_NIL = allocate_mario_action(ACT_FLAG_IDLE | ACT_FLAG_ALLOW_FIRST
 function act_idle_NIL(m)
     local s = nilExtraStates2[m.playerIndex]
 
-    if _G.charSelect.character_get_current_number(gMarioStates[0].playerIndex) ~= CT_NILL and not _G.charSelect.is_menu_open() then
-        if m.playerIndex == 0 then
-            set_mario_action(m, ACT_IDLE, 0);
-        end
-    end
-
-
     if m.heldObj ~= nil then
         if (m.input & INPUT_B_PRESSED ~= 0) then
             set_mario_action(m, ACT_THROW_GROUND_NILL, 0)

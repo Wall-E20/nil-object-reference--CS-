@@ -15,13 +15,13 @@ if not _G.charSelectExists then
     return 0
 end
 
-local NIL = smlua_model_util_get_id("nil_geo") -- Located in "actors"
+ NIL = smlua_model_util_get_id("nil_geo") -- Located in "actors"
 
 --local TEX_CHAR_LIFE_OOF = get_texture_info("Iconoof") -- Located in "textures"
 -- local TEX_CHAR_STAR_ICON = get_texture_info("exclamation-icon") -- Located in "textures"
 
 
-local funny_colors_table = {
+ funny_colors_table = {
     [PANTS]  = { r = 0, g = 0, b = 0 },
     [SHIRT]  = { r = 0, g = 0, b = 0 },
     [GLOVES] = { r = 29, g = 29, b = 29 },
@@ -34,7 +34,7 @@ local funny_colors_table = {
 
 
 
-local yay = {
+ yay = {
     [CHAR_ANIM_A_POSE] = "h_fly_idle",
     [CHAR_ANIM_IDLE_HEAD_LEFT] = "h_idle_2",
     [CHAR_ANIM_IDLE_HEAD_RIGHT] = "h_idle_2",
@@ -63,7 +63,7 @@ local yay = {
     [CHAR_ANIM_IDLE_HEAVY_OBJ] = "h_hold_fly",
     [charSelect.CS_ANIM_MENU] = "h_menupose",
 }
-local yayalt = {
+ yayalt = {
     [CHAR_ANIM_A_POSE] = "h_fly_idle",
     [CHAR_ANIM_IDLE_HEAD_LEFT] = "h_dle",
     [CHAR_ANIM_IDLE_HEAD_RIGHT] = "h_dle",
@@ -92,7 +92,7 @@ local yayalt = {
     [CHAR_ANIM_IDLE_HEAVY_OBJ] = "h_hold_fly",
     [charSelect.CS_ANIM_MENU] = "h_menupose",
 }
-
+--[[
 hook_event(HOOK_BEFORE_SET_MARIO_ACTION, function(m)
     if m.playerIndex == 0 then
         idleanim = math.random(2)
@@ -103,7 +103,7 @@ hook_event(HOOK_BEFORE_SET_MARIO_ACTION, function(m)
         end
     end
 end)
-
+--]]
 
 local NOTEXTURE_METER = {
     label = {
@@ -146,6 +146,8 @@ local function on_character_select_load()
     _G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, cs_nil_update)
     _G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, iwalkonlava)
     _G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_INTERACT, on_allow_interact)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ON_INTERACT, on_interact)
 end
 
 local function on_character_sound(m, sound)

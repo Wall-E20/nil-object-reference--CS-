@@ -6,7 +6,7 @@ storedMarioPos = { x = 0.0, y = 0.0, z = 0.0 }
 ---@param interactedObject Object
 ---@param interactionType InteractionType
 ---@return boolean
-local function on_allow_interact(interactingMarioState, interactedObject, interactionType)
+function on_allow_interact(interactingMarioState, interactedObject, interactionType)
     if interactionType ~= INTERACT_GRABBABLE or interactingMarioState == nil or interactedObject == nil  then
         return true
     end
@@ -31,7 +31,7 @@ end
 ---@param interactedObject Object
 ---@param interactionType InteractionType
 ---@param interactionInterrupted boolean
-local function on_interact(interactingMarioState, interactedObject, interactionType, interactionInterrupted)
+function on_interact(interactingMarioState, interactedObject, interactionType, interactionInterrupted)
     -- interaction cases not cared about
     if
         interactionType ~= INTERACT_GRABBABLE or
@@ -75,6 +75,6 @@ local function on_mario_update(updatingMarioState)
     end
 end
 
-hook_event(HOOK_ALLOW_INTERACT, on_allow_interact)
-hook_event(HOOK_ON_INTERACT, on_interact)
+--hook_event(HOOK_ALLOW_INTERACT, on_allow_interact)
+--hook_event(HOOK_ON_INTERACT, on_interact)
 --hook_event(HOOK_MARIO_UPDATE, on_mario_update)
