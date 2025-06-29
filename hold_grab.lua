@@ -77,4 +77,4 @@ end
 
 hook_event(HOOK_ALLOW_INTERACT, on_allow_interact)
 hook_event(HOOK_ON_INTERACT, on_interact)
-hook_event(HOOK_MARIO_UPDATE, on_mario_update)
+--hook_event(HOOK_MARIO_UPDATE, on_mario_update)
