@@ -28,10 +28,10 @@ end
 
 local function nilupdate(m)
     local s = nilExtraStates3[m.playerIndex]
-    _G.charSelect.character_edit(CT_NILL, string.random(math.random(1, 5)), string.random(math.random(20, 30)), nil, nil,
+    _G.charSelect.character_edit(CT_NILL, string.random(math.random(3, 5)), string.random(math.random(20, 30)), nil, nil,
         nil, nil, nil, nil)
     if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
-        if m.marioObj.header.gfx.animInfo.animID == charSelect.CS_ANIM_MENU and is_anim_past_frame(m, 11) then
+        if m.marioObj.header.gfx.animInfo.animID == _G.charSelect.CS_ANIM_MENU and is_anim_past_frame(m, 11) then
             m.marioBodyState.eyeState = 6
         end
         if m.action == ACT_STAR_DANCE_WATER and m.marioObj.header.gfx.animInfo.animFrame >= 25 then
@@ -49,7 +49,7 @@ hook_event(HOOK_MARIO_UPDATE, nilupdate)
 
 
 
-local ONLYMYACTIONS = {
+ ONLYMYACTIONS = {
     [ACT_STANDING_NIL] = true,
     [ACT_WALKING_NIL] = true,
     [ACT_FALL_NIL] = true,
@@ -71,18 +71,12 @@ local ONLYMYACTIONS = {
     [ACT_DECELERATING] = true,
     [ACT_DROWNING] = true,
     [ACT_AIR_THROW] = true,
+    [ACT_FIRST_PERSON] = true,
     --[thisisfortheerrormessagelmao] = true,
 }
 
 
-
----@type Vec3f
-storedMarioPos = { x = 0.0, y = 0.0, z = 0.0 }
-
-
----@return boolean
----@param updatingMarioState MarioState
-function cs_nil_update(m, updatingMarioState)
+function cs_nil_update(m)
     local s = nilExtraStates3[m.playerIndex]
     if m.pos.y <= m.waterLevel - 100 then
         if get_global_timer() % 1 == 0 and s.splash == true then
@@ -100,38 +94,6 @@ function cs_nil_update(m, updatingMarioState)
     else
         s.splash = true
     end
-    if _G.charSelect.character_get_current_number() == CT_NILL then
-        if updatingMarioState.controller.buttonDown & B_BUTTON ~= 0 and mario_check_object_grab(updatingMarioState) ~= 0 and (updatingMarioState.action ~= ACT_AIR_THROW or updatingMarioState.action ~= ACT_THROW_GROUND_NILL) then
-            mario_grab_used_object(updatingMarioState)
-            if updatingMarioState.heldObj ~= nil then
-                if (updatingMarioState.action & ACT_FLAG_AIR) ~= 0 then
-                    set_mario_action(updatingMarioState, ACT_GENERAL_THING, 0)
-                else
-                    set_mario_action(updatingMarioState, ACT_STANDING_NIL, 0)
-                end
-                updatingMarioState.actionState = 1
-            end
-        end
-    end
-    if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
-    else
-        if (ONLYMYACTIONS[m.action] ~= true) and ((m.action & ACT_FLAG_CUSTOM_ACTION) == 0) and ((m.action & ACT_GROUP_CUTSCENE) == 0) and not _G.charSelect.is_menu_open() then
-            if ((m.action & ACT_FLAG_AIR) ~= 0) then
-                set_mario_action(m, ACT_GENERAL_THING, 0)
-                --djui_chat_message_create("set action to flyng")
-            elseif ((m.action & ACT_FLAG_SWIMMING_OR_FLYING) ~= 0) then
-                set_mario_action(m, ACT_GENERAL_THING, 0)
-                --djui_chat_message_create("set action to flyng")
-            elseif ((m.action & ACT_FLAG_AIR) == 0) then
-                set_mario_action(m, ACT_FALL_NIL, 0)
-                --djui_chat_message_create("set action to fall")
-            elseif ((m.action & ACT_FLAG_IDLE) ~= 0) then
-                set_mario_action(m, ACT_STANDING_NIL, 0)
-                --djui_chat_message_create("set action to idle")
-            end
-        end
-    end
-    local s = nilExtraStates3[m.playerIndex]
 
     m.peakHeight = m.pos.y
     if m.hurtCounter >= 1 then
@@ -141,6 +103,8 @@ function cs_nil_update(m, updatingMarioState)
     end
     -- djui_chat_message_create("VelController = " .. VelController)
 end
+
+hook_event(HOOK_MARIO_UPDATE, cs_nil_update)
 
 function before_NIL_update(m)
     if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
@@ -153,7 +117,7 @@ function before_NIL_update(m)
     end
 end
 
---hook_event(HOOK_BEFORE_MARIO_UPDATE, before_NIL_update)
+hook_event(HOOK_BEFORE_MARIO_UPDATE, before_NIL_update)
 
 function allowwater(m)
     if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
@@ -163,7 +127,7 @@ function allowwater(m)
     end
 end
 
---hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allowwater)
+hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allowwater)
 
 
 --- @param m MarioState
@@ -184,4 +148,4 @@ end)
 ]]
 function iwalkonlava(m) return not (_G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL) end
 
---hook_event(HOOK_ALLOW_HAZARD_SURFACE, iwalkonlava)
+hook_event(HOOK_ALLOW_HAZARD_SURFACE, iwalkonlava)

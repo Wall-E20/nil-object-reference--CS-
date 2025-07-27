@@ -1,6 +1,6 @@
 --ahah i like goombas
-local hasstar = false
-local hashi = false
+gPlayerSyncTable[0].hasstar = false
+gPlayerSyncTable[0].hashi = false
 
  function chatsound(_) play_sound(SOUND_MENU_MESSAGE_APPEAR, gLakituState.curPos) end
 
@@ -57,8 +57,10 @@ local function nil_chat_messages(m)
                 chatsound()
                 nilmessage("ahhg!")
             end
+            m.hurtCounter = 0
+m.health = 1 << 8
         end
-        if m.action == ACT_STAR_DANCE_WATER and hasstar == false and (is_anim_past_frame(m, 15) ~= 0) then
+        if m.action == ACT_STAR_DANCE_WATER and gPlayerSyncTable[0].hasstar == false and (is_anim_past_frame(m, 15) ~= 0) then
             if poss4 == 1 then
                 chatsound()
                 nilmessage("here we go!")
@@ -72,7 +74,7 @@ local function nil_chat_messages(m)
                 chatsound()
                 nilmessage("we have " .. m.numStars .. " now :3")
             end
-            hasstar = true
+            gPlayerSyncTable[0].hasstar = true
         end
     end
 end
@@ -80,15 +82,15 @@ hook_event(HOOK_MARIO_UPDATE, nil_chat_messages)
 
 
 local function on_warp(m)
-    hashi = false
-    hasstar = false
+    gPlayerSyncTable[0].hashi = false
+    gPlayerSyncTable[0].hasstar = false
 end
 hook_event(HOOK_ON_WARP, on_warp)
 
-local greatings = true
+gPlayerSyncTable[0].greatings = true
 hook_event(HOOK_UPDATE, function()
-    if greatings == true and get_global_timer() % 20 == 0 then
-        greatings = false
+    if gPlayerSyncTable[0].greatings == true and get_global_timer() % 20 == 0 then
+        gPlayerSyncTable[0].greatings = false
         chatsound()
         nilmessage("oh hihi " .. gNetworkPlayers[0].name .. "!")
     end

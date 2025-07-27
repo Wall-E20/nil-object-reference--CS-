@@ -28,7 +28,7 @@ function replace_acts(m, action)
         end
     end
 end
---hook_event(HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
+hook_event(HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
 
 
 local function onlymine(m, action)
@@ -53,4 +53,4 @@ local function onlymine(m, action)
         end
     end
 end
---hook_event(HOOK_MARIO_UPDATE, onlymine)
+hook_event(HOOK_MARIO_UPDATE, onlymine)

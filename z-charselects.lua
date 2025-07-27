@@ -90,7 +90,7 @@ end
     [CHAR_ANIM_JUMP_WITH_LIGHT_OBJ] = "h_hold_jump",
     [CHAR_ANIM_FALL_LAND_WITH_LIGHT_OBJ] = "h_hold_land",
     [CHAR_ANIM_IDLE_HEAVY_OBJ] = "h_hold_fly",
-    [charSelect.CS_ANIM_MENU] = "h_menupose",
+    [_G.charSelect.CS_ANIM_MENU] = "h_menupose",
 }
 --[[
 hook_event(HOOK_BEFORE_SET_MARIO_ACTION, function(m)
@@ -104,7 +104,7 @@ hook_event(HOOK_BEFORE_SET_MARIO_ACTION, function(m)
     end
 end)
 --]]
-
+local nil_icon = get_texture_info("ICON")
 local NOTEXTURE_METER = {
     label = {
         left = get_texture_info("nil"),
@@ -129,9 +129,9 @@ local COURSE_NIL = {
 
 local CSloaded = false
 local function on_character_select_load()
-    CT_NILL = _G.charSelect.character_add("nil", "''Null - Object reference not set to an insrance of an object.'' haha, jk. hello <3", "Wall_E20",
+    CT_NILL = _G.charSelect.character_add("nil", "''nil - Object reference not set to an insrance of an object.'' haha, jk. hello <3", "Wall_E20",
         { r = 234, g = 0, b = 255 },
-        NIL, nil, nil, 1.2)
+        NIL, nil, nil_icon, 1.2)
     --_G.charSelect.character_add_celebration_star(NIL, E_MODEL_STAR, nil)
     _G.charSelect.config_character_sounds()
     _G.charSelect.character_add_voice(NIL, voice)
@@ -141,13 +141,13 @@ local function on_character_select_load()
     _G.charSelect.character_add_course_texture(CT_NILL, COURSE_NIL)
 
 
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_MARIO_UPDATE, before_NIL_update)
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_FORCE_WATER_ACTION, allowwater)
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, cs_nil_update)
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, iwalkonlava)
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_INTERACT, on_allow_interact)
-    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ON_INTERACT, on_interact)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_MARIO_UPDATE, before_NIL_update)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_FORCE_WATER_ACTION, allowwater)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, cs_nil_update)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, iwalkonlava)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_INTERACT, on_allow_interact)
+    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_ON_INTERACT, on_interact)
 end
 
 local function on_character_sound(m, sound)

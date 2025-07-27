@@ -2,18 +2,34 @@ _G.ACT_GENERAL_THING = allocate_mario_action(ACT_FLAG_AIR | ACT_FLAG_ALLOW_FIRST
     ACT_FLAG_CUSTOM_ACTION)
 
 
+
 nilExtraStates2 = {}
 for i = 0, (MAX_PLAYERS - 1) do
     nilExtraStates2[i] = {}
     local e = nilExtraStates2[i]
-        e.VelController = 1
-        e.sidewaysSpeed = 0
-        e.intendedDYaw = 0
-        e.intendedMag = 0
-        e.speedbug = false
+    e.VelController = 1
+    e.sidewaysSpeed = 0
+    e.intendedDYaw = 0
+    e.intendedMag = 0
+    e.speedbug = false
+    e.freecamera = false
 end
 
+
+
+local function cameramode(m)
+        local s = nilExtraStates2[m.playerIndex]
+    if camera_config_is_free_cam_enabled() then
+        s.freecamera = true
+    else
+        s.freecamera = false
+    end
+end
+hook_event(HOOK_MARIO_UPDATE, cameramode)
+
+
 function the_whole_thing_act(m)
+    
     local s = nilExtraStates2[m.playerIndex]
     if m.heldObj ~= nil then
         set_character_animation(m, CHAR_ANIM_IDLE_HEAVY_OBJ)
@@ -23,11 +39,17 @@ function the_whole_thing_act(m)
     else
         set_character_animation(m, CHAR_ANIM_A_POSE)
     end
-    if m.playerIndex ~= 0 then
-    else
-        gMarioStates[m.playerIndex].faceAngle.y = gLakituState.yaw - 32767
+    if s.freecamera == false then
+        set_camera_mode(m.area.camera, CAMERA_MODE_BEHIND_MARIO, 1)
     end
-    m.vel.y = m.vel.y + 4
+    if s.freecamera == false then
+        m.faceAngle.y = m.intendedYaw - approach_s32(s16(m.intendedYaw - m.faceAngle.y), 0, 0x800, 0x800);
+    else
+        if m.playerIndex ~= 0 then
+        else
+            gMarioStates[m.playerIndex].faceAngle.y = gLakituState.yaw - 32767
+        end
+    end
 
     if m.vel.y > 0 then
         m.vel.y = m.vel.y - 1.5
@@ -47,29 +69,30 @@ function the_whole_thing_act(m)
 
 
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 then
-        if m.controller.stickX < 0 then
-            s.VelController = s.VelController + 1
-            if somari == false then
-                if s.VelController >= 32 then
-                    s.VelController = s.VelController - 1
+        if s.freecamera then
+            if m.controller.stickX < 0 then
+                s.VelController = s.VelController + 1
+                if somari == false then
+                    if s.VelController >= 32 then
+                        s.VelController = s.VelController - 1
+                    end
                 end
             end
-        end
-        if m.controller.stickX > 0 then
-            s.VelController = s.VelController - 1
-            if somari == false then
-                if s.VelController <= -32 then
-                    s.VelController = s.VelController + 1
+            if m.controller.stickX > 0 then
+                s.VelController = s.VelController - 1
+                if somari == false then
+                    if s.VelController <= -32 then
+                        s.VelController = s.VelController + 1
+                    end
                 end
             end
+            --m.controller.stickY > 0
+            s.intendedDYaw = m.intendedYaw - m.faceAngle.y;
+            s.intendedMag = m.intendedMag / 32.0
+
+            m.forwardVel = m.forwardVel + s.intendedMag * coss(s.intendedDYaw) * 1.5
+            s.sidewaysSpeed = s.intendedMag * sins(s.intendedDYaw) * 1
         end
-        --m.controller.stickY > 0
-        s.intendedDYaw = m.intendedYaw - m.faceAngle.y;
-        s.intendedMag = m.intendedMag / 32.0
-
-        m.forwardVel = m.forwardVel + s.intendedMag * coss(s.intendedDYaw) * 1.5
-        s.sidewaysSpeed = s.intendedMag * sins(s.intendedDYaw) * 1
-
         if somari == false then
             if m.forwardVel >= 35 then
                 m.forwardVel = m.forwardVel - 2.5
@@ -78,37 +101,40 @@ function the_whole_thing_act(m)
         if m.forwardVel <= -32 then
             m.forwardVel = m.forwardVel + 2.5
         end
+        if s.freecamera then
+            if m.controller.stickY > 0 then
+                set_character_animation(m, CHAR_ANIM_WATER_ACTION_END)
+            end
 
+            if m.controller.stickY < 0 then
+                set_character_animation(m, CHAR_ANIM_WATER_ACTION_END_WITH_OBJ)
+            end
 
-        m.vel.x = m.forwardVel * sins(m.faceAngle.y);
-        m.vel.z = m.forwardVel * coss(m.faceAngle.y);
+            if m.controller.stickX > 0 then
+                set_character_animation(m, CHAR_ANIM_WATER_IDLE)
+            end
 
-        if m.controller.stickY > 0 then
+            if m.controller.stickX < 0 then
+                set_character_animation(m, CHAR_ANIM_WATER_IDLE_WITH_OBJ)
+            end
+        else
             set_character_animation(m, CHAR_ANIM_WATER_ACTION_END)
         end
-
-        if m.controller.stickY < 0 then
-            set_character_animation(m, CHAR_ANIM_WATER_ACTION_END_WITH_OBJ)
-        end
-
-        if m.controller.stickX > 0 then
-            set_character_animation(m, CHAR_ANIM_WATER_IDLE)
-        end
-
-        if s.VelController > 0 and m.controller.stickX > 0 then
-            s.VelController = s.VelController - 1
-        end
-
-        if m.controller.stickX < 0 then
-            set_character_animation(m, CHAR_ANIM_WATER_IDLE_WITH_OBJ)
-        end
-
-        if s.VelController < 0 and m.controller.stickX < 0 then
-            s.VelController = s.VelController + 1
+        if s.freecamera then
+            if s.VelController < 0 and m.controller.stickX < 0 then
+                s.VelController = s.VelController + 1
+            end
+            if s.VelController > 0 and m.controller.stickX > 0 then
+                s.VelController = s.VelController - 1
+            end
+            m.vel.x = m.forwardVel * sins(m.faceAngle.y);
+            m.vel.z = m.forwardVel * coss(m.faceAngle.y);
         end
     end
-    m.vel.x = m.vel.x + (s.sidewaysSpeed + s.VelController) * sins(m.faceAngle.y + 0x4000);
-    m.vel.z = m.vel.z + (s.sidewaysSpeed + s.VelController) * coss(m.faceAngle.y + 0x4000);
+    if s.freecamera then
+        m.vel.x = m.vel.x + (s.sidewaysSpeed + s.VelController) * sins(m.faceAngle.y + 0x4000);
+        m.vel.z = m.vel.z + (s.sidewaysSpeed + s.VelController) * coss(m.faceAngle.y + 0x4000);
+    end
     if (m.input & INPUT_NONZERO_ANALOG) == 0 then
         if s.VelController > 0 then
             s.VelController = s.VelController - 1
@@ -145,18 +171,19 @@ function the_whole_thing_act(m)
     end
 
     if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
+              reset_camera(m.area.camera)
         set_mario_action(m, ACT_FALL_NIL, 0)
     end
     if (m.controller.buttonDown & Z_TRIG ~= 0) then
         set_character_animation(m, CHAR_ANIM_DOUBLE_JUMP_FALL)
-    if m.playerIndex ~= 0 then
-    else
-        if ((m.vel.x >= 180 or m.vel.z >= 180) or (m.vel.x <= -180 or m.vel.z <= -180)) and s.speedbug == false then
-            s.speedbug = true
-            chatsound()
-            nilmessage("oh! looks like you discovered a bug! <3\n something like a blj or something :0")
+        if m.playerIndex ~= 0 then
+        else
+            if ((m.vel.x >= 180 or m.vel.z >= 180) or (m.vel.x <= -180 or m.vel.z <= -180)) and s.speedbug == false then
+                s.speedbug = true
+                chatsound()
+                nilmessage("oh! looks like you discovered a bug! <3\n something like a blj or something :0")
+            end
         end
-    end
         m.vel.y = m.vel.y - 3
         if m.vel.y <= -50 then
             m.vel.y = m.vel.y + 3
@@ -167,7 +194,9 @@ function the_whole_thing_act(m)
     end
     interact_w_door(m)
     if m.pos.y == m.floorHeight and m.vel.y <= 0 then
+        apply_slope_accel(m)
         perform_ground_step(m)
+        update_air_without_turn(m)
     else
         perform_air_step(m, 0)
         update_air_without_turn(m)
@@ -176,7 +205,11 @@ end
 
 hook_mario_action(_G.ACT_GENERAL_THING, the_whole_thing_act)
 
+function nilgravity(m)
+    m.vel.y = m.vel.y
+end
 
+hook_mario_action(_G.ACT_GENERAL_THING, { gravity = nilgravity })
 
 
 _G.ACT_STANDING_NIL = allocate_mario_action(ACT_FLAG_IDLE | ACT_FLAG_ALLOW_FIRST_PERSON | ACT_FLAG_STATIONARY |
@@ -196,9 +229,15 @@ function act_idle_NIL(m)
         set_mario_action(m, ACT_JUMP_NIL, 0);
     end
 
+    if (m.input & INPUT_FIRST_PERSON ~= 0) then
+        s.VelController = 0
+        set_mario_action(m, ACT_FIRST_PERSON,0)
+    end
+
     if (m.input & INPUT_NONZERO_ANALOG ~= 0) then
         set_mario_action(m, ACT_WALKING_NIL, 0);
     end
+
     if m.heldObj ~= nil then
         set_character_animation(m, CHAR_ANIM_IDLE_WITH_LIGHT_OBJ)
     else
