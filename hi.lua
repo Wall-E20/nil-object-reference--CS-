@@ -58,7 +58,6 @@ local function nil_chat_messages(m)
                 nilmessage("ahhg!")
             end
             m.hurtCounter = 0
-m.health = 1 << 8
         end
         if m.action == ACT_STAR_DANCE_WATER and gPlayerSyncTable[0].hasstar == false and (is_anim_past_frame(m, 15) ~= 0) then
             if poss4 == 1 then
