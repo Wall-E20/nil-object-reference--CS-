@@ -2,22 +2,6 @@
 --description: hi :>
 
 
-nilExtraStates3 = {}
-
-local function nil_reset_extra_states(index)
-    if index == nil then index = 0 end
-    nilExtraStates3[index] = {
-        splash = true
-
-    }
-end
-
-for i = 0, MAX_PLAYERS - 1 do
-    nil_reset_extra_states(i)
-end
-
-
-
 function string.random(length)
     if length > 0 then
         return string.random(length - 1) .. string.char(math.random(65, 65 + 50))
@@ -27,7 +11,7 @@ function string.random(length)
 end
 
 local function nilupdate(m)
-    local s = nilExtraStates3[m.playerIndex]
+    local s = nilExtraStates2[m.playerIndex]
     _G.charSelect.character_edit(CT_NILL, string.random(math.random(3, 5)), string.random(math.random(20, 30)), nil, nil,
         nil, nil, nil, nil)
     if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
@@ -77,7 +61,7 @@ hook_event(HOOK_MARIO_UPDATE, nilupdate)
 
 
 function cs_nil_update(m)
-    local s = nilExtraStates3[m.playerIndex]
+    local s = nilExtraStates2[m.playerIndex]
     if m.pos.y <= m.waterLevel - 100 then
         if get_global_timer() % 1 == 0 and s.splash == true then
             s.splash = false

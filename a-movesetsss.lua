@@ -13,12 +13,12 @@ for i = 0, (MAX_PLAYERS - 1) do
     e.intendedMag = 0
     e.speedbug = false
     e.freecamera = false
+    e.splash = true
 end
 
 
-
 local function cameramode(m)
-        local s = nilExtraStates2[m.playerIndex]
+    local s = nilExtraStates2[m.playerIndex]
     if camera_config_is_free_cam_enabled() then
         s.freecamera = true
     else
@@ -29,7 +29,6 @@ hook_event(HOOK_MARIO_UPDATE, cameramode)
 
 
 function the_whole_thing_act(m)
-    
     local s = nilExtraStates2[m.playerIndex]
     if m.heldObj ~= nil then
         set_character_animation(m, CHAR_ANIM_IDLE_HEAVY_OBJ)
@@ -171,19 +170,13 @@ function the_whole_thing_act(m)
     end
 
     if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
-              reset_camera(m.area.camera)
+        if s.freecamera == false then
+            reset_camera(m.area.camera)
+        end
         set_mario_action(m, ACT_FALL_NIL, 0)
     end
     if (m.controller.buttonDown & Z_TRIG ~= 0) then
         set_character_animation(m, CHAR_ANIM_DOUBLE_JUMP_FALL)
-        if m.playerIndex ~= 0 then
-        else
-            if ((m.vel.x >= 180 or m.vel.z >= 180) or (m.vel.x <= -180 or m.vel.z <= -180)) and s.speedbug == false then
-                s.speedbug = true
-                chatsound()
-                nilmessage("oh! looks like you discovered a bug! <3\n something like a blj or something :0")
-            end
-        end
         m.vel.y = m.vel.y - 3
         if m.vel.y <= -50 then
             m.vel.y = m.vel.y + 3
@@ -192,6 +185,16 @@ function the_whole_thing_act(m)
             m.vel.y = 0
         end
     end
+
+    if m.playerIndex ~= 0 then
+    else
+        if ((m.vel.x >= 180 or m.vel.z >= 180) or (m.vel.x <= -180 or m.vel.z <= -180)) and s.speedbug == false then
+            s.speedbug = true
+            chatsound()
+            nilmessage("oh! looks like you discovered a bug! <3\n something like a blj or something :0")
+        end
+    end
+
     interact_w_door(m)
     if m.pos.y == m.floorHeight and m.vel.y <= 0 then
         apply_slope_accel(m)
@@ -231,7 +234,7 @@ function act_idle_NIL(m)
 
     if (m.input & INPUT_FIRST_PERSON ~= 0) then
         s.VelController = 0
-        set_mario_action(m, ACT_FIRST_PERSON,0)
+        set_mario_action(m, ACT_FIRST_PERSON, 0)
     end
 
     if (m.input & INPUT_NONZERO_ANALOG ~= 0) then
