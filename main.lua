@@ -80,11 +80,13 @@ function cs_nil_update(m)
     end
 
     m.peakHeight = m.pos.y
+    --[[
     if m.hurtCounter >= 1 then
         m.health = m.health - 512
         m.hurtCounter = 0
         m.invincTimer = 30
     end
+    --]]
     -- djui_chat_message_create("VelController = " .. VelController)
 end
 
