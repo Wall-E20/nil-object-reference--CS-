@@ -58,23 +58,9 @@ function on_interact(interactingMarioState, interactedObject, interactionType, i
 end
 
 ---comment
----@param updatingMarioState MarioState
-local function on_mario_update(updatingMarioState)
-    if _G.charSelect.character_get_current_number() == CT_NILL then
-        if updatingMarioState.controller.buttonDown & B_BUTTON ~= 0 and mario_check_object_grab(updatingMarioState) ~= 0 and (updatingMarioState.action ~= ACT_AIR_THROW or updatingMarioState.action ~= ACT_THROW_GROUND_NILL) then
-            mario_grab_used_object(updatingMarioState)
-            if updatingMarioState.heldObj ~= nil then
-                if (updatingMarioState.action & ACT_FLAG_AIR) ~= 0 then
-                    set_mario_action(updatingMarioState, ACT_GENERAL_THING, 0)
-                else
-                    set_mario_action(updatingMarioState, ACT_STANDING_NIL, 0)
-                end
-                updatingMarioState.actionState = 1
-            end
-        end
-    end
-end
 
-hook_event(HOOK_ALLOW_INTERACT, on_allow_interact)
-hook_event(HOOK_ON_INTERACT, on_interact)
-hook_event(HOOK_MARIO_UPDATE, on_mario_update)
+
+
+--hook_event(HOOK_ALLOW_INTERACT, on_allow_interact)
+--hook_event(HOOK_ON_INTERACT, on_interact)
+--hook_event(HOOK_MARIO_UPDATE, on_mario_update)

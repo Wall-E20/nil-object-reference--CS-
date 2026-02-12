@@ -14,6 +14,8 @@ for i = 0, (MAX_PLAYERS - 1) do
     e.speedbug = false
     e.freecamera = false
     e.splash = true
+    e.moves = false
+    e.chatmovesets = true
 end
 
 
@@ -39,13 +41,14 @@ function the_whole_thing_act(m)
         set_character_animation(m, CHAR_ANIM_A_POSE)
     end
     if s.freecamera == false then
+        if m.playerIndex == 0 then
         set_camera_mode(m.area.camera, CAMERA_MODE_BEHIND_MARIO, 1)
+        end
     end
     if s.freecamera == false then
         m.faceAngle.y = m.intendedYaw - approach_s32(s16(m.intendedYaw - m.faceAngle.y), 0, 0x800, 0x800);
     else
-        if m.playerIndex ~= 0 then
-        else
+        if m.playerIndex == 0 then
             gMarioStates[m.playerIndex].faceAngle.y = gLakituState.yaw - 32767
         end
     end
@@ -171,7 +174,9 @@ function the_whole_thing_act(m)
 
     if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
         if s.freecamera == false then
-            reset_camera(m.area.camera)
+            if m.playerIndex == 0 then
+             set_camera_mode(m.area.camera, CAMERA_MODE_8_DIRECTIONS, 1)
+            end
         end
         set_mario_action(m, ACT_FALL_NIL, 0)
     end
@@ -183,15 +188,6 @@ function the_whole_thing_act(m)
         end
         if m.pos.y == m.floorHeight then
             m.vel.y = 0
-        end
-    end
-
-    if m.playerIndex ~= 0 then
-    else
-        if ((m.vel.x >= 180 or m.vel.z >= 180) or (m.vel.x <= -180 or m.vel.z <= -180)) and s.speedbug == false then
-            s.speedbug = true
-            chatsound()
-            nilmessage("oh! looks like you discovered a bug! <3\n something like a blj or something :0")
         end
     end
 

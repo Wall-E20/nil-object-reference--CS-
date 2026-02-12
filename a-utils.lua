@@ -99,6 +99,55 @@ function update_h_walking_speed(m)
 end
 
 
+
+--random vanilla strings get code by: Blocky
+local sVanillaStrings = {}
+
+local ACT_COUNT = 6
+
+function cache_vanilla_strings()
+    if #sVanillaStrings > 0 then return end
+
+    for course = COURSE_BOB, COURSE_RR do
+
+        sVanillaStrings[#sVanillaStrings + 1] = smlua_text_utils_course_name_get(course)
+
+        for act = 1, ACT_COUNT do
+            sVanillaStrings[#sVanillaStrings + 1] = smlua_text_utils_act_name_get(course, act)
+        end
+    end
+
+    for id = DIALOG_000, DIALOG_COUNT - 1 do
+        sVanillaStrings[#sVanillaStrings + 1] = smlua_text_utils_dialog_get(id).text
+    end
+end
+
+cache_vanilla_strings()
+
+function split_words(string)
+    local out = {}
+    for word in string:gmatch("[^%s]+") do
+        out[#out + 1] = word
+    end
+    return out
+end
+
+function get_string_from_random_vanilla_parts(wordCount)
+
+    wordCount = wordCount or 1
+
+    local out = {}
+    for i = 1, wordCount do
+        local base = sVanillaStrings[math.random(1, #sVanillaStrings)]
+        local words = split_words(base)
+
+        out[#out + 1] = words[math.random(1, #words)]
+    end
+
+    return table.concat(out, " ")
+end
+
+
 somari = false
 --function used for built in support for some external mods
 local function modsupport()

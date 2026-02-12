@@ -16,23 +16,24 @@ if not _G.charSelectExists then
 end
 
  NIL = smlua_model_util_get_id("nil_geo") -- Located in "actors"
-
---local TEX_CHAR_LIFE_OOF = get_texture_info("Iconoof") -- Located in "textures"
--- local TEX_CHAR_STAR_ICON = get_texture_info("exclamation-icon") -- Located in "textures"
+ NIL_2 = smlua_model_util_get_id("nil_alt_geo") -- Located in "actors"
 
 
  funny_colors_table = {
-    [PANTS]  = { r = 0, g = 0, b = 0 },
-    [SHIRT]  = { r = 0, g = 0, b = 0 },
-    [GLOVES] = { r = 29, g = 29, b = 29 },
-    [SHOES]  = { r = 17, g = 6, b = 29 },
-    [HAIR]   = { r = 29, g = 25, b = 29 },
-    [SKIN]   = { r = 172, g = 130, b = 105 },
-    [CAP]    = { r = 23, g = 23, b = 40 },
-    [EMBLEM] = { r = 200, g = 0, b = 40 },
+    [PANTS]  = "0B050F",
+    [SHIRT]  = "1D1430",
+    [GLOVES] = "0B050F",
+    [SHOES]  = "191919",
+    [HAIR]   = "EA00FF",
+    [SKIN]   = "917B69",
+    [CAP]    = "EA00FF",
+    [EMBLEM] = "EA00FF",
 }
 
 
+niltable = {
+     [CHAR_ANIM_SINGLE_JUMP] = nil,
+    [charSelect.CS_ANIM_MENU] = "h_menupose",}
 
  yay = {
     [CHAR_ANIM_A_POSE] = "h_fly_idle",
@@ -92,19 +93,12 @@ end
     [CHAR_ANIM_IDLE_HEAVY_OBJ] = "h_hold_fly",
     [_G.charSelect.CS_ANIM_MENU] = "h_menupose",
 }
---[[
-hook_event(HOOK_BEFORE_SET_MARIO_ACTION, function(m)
-    if m.playerIndex == 0 then
-        idleanim = math.random(2)
-        if idleanim == 2 and m.action ~= ACT_LAND_NIL then
-            _G.charSelect.character_add_animations(NIL, yay)
-        elseif idleanim == 1 and m.action ~= ACT_LAND_NIL then
-            _G.charSelect.character_add_animations(NIL, yayalt)
-        end
-    end
-end)
---]]
-local nil_icon = get_texture_info("ICON")
+
+
+nil_icon = string.random(2)
+
+star_icon = get_texture_info("ICON")
+
 local NOTEXTURE_METER = {
     label = {
         left = get_texture_info("nil"),
@@ -127,27 +121,65 @@ local COURSE_NIL = {
     bottom = get_texture_info("NIL_COURSE"),
 }
 
+
+
+random = {
+    [PANTS]  = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [SHIRT]  = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [GLOVES] = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [SHOES]  = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [HAIR]   = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [SKIN]   = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [CAP]    = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+    [EMBLEM] = {r = math.random(0, 255), g = math.random(0, 255), b = math.random(0, 255)},
+}
+
+NILOPTIONMENU = _G.charSelect.add_option("nil's random sizes", nil, nil, {"Off", "On"}, {"Randomize nil's Sizes randomly every frame", "(only when movesets are on.)"}, true)
+
+local randommodel = math.random(1, E_MODEL_MAX - 1)
+--her name is nil lol
+local name
 local CSloaded = false
 local function on_character_select_load()
-    CT_NILL = _G.charSelect.character_add("nil", "''nil - Object reference not set to an insrance of an object.'' haha, jk. hello <3", "Wall_E20",
-        { r = 234, g = 0, b = 255 },
+    CT_NILL = _G.charSelect.character_add(tostring(name), "''nil - Object reference not set to an insrance of an object.'' haha, jk. hello <3", "Wall_E20",
+        nil,
         NIL, nil, nil_icon, 1.2)
-    --_G.charSelect.character_add_celebration_star(NIL, E_MODEL_STAR, nil)
+
+    _G.charSelect.character_add_celebration_star(NIL, math.random(1, E_MODEL_MAX - 1), star_icon)
+
+    _G.charSelect.character_add_peach_custom(NIL, math.random(1, E_MODEL_MAX - 1), math.random(1, E_MODEL_MAX - 1), math.random(1, E_MODEL_MAX - 1))
+    _G.charSelect.character_add_ending_toad_model(NIL, math.random(1, E_MODEL_MAX - 1), math.random(1, E_MODEL_MAX - 1), math.random(1, E_MODEL_MAX - 1))
+
     _G.charSelect.config_character_sounds()
+
     _G.charSelect.character_add_voice(NIL, voice)
-    _G.charSelect.character_add_palette_preset(NIL, funny_colors_table)
+    _G.charSelect.character_add_voice(NIL_2, voice)
+
+    _G.charSelect.character_add_palette_preset(NIL, funny_colors_table, get_string_from_random_vanilla_parts(3))
+    _G.charSelect.character_add_palette_preset(NIL_2, funny_colors_table, get_string_from_random_vanilla_parts(3))
+
+
+    _G.charSelect.character_add_palette_preset(NIL, random, get_string_from_random_vanilla_parts(4))
+    _G.charSelect.character_add_palette_preset(NIL_2, random, get_string_from_random_vanilla_parts(4))
+
+
 	_G.charSelect.character_add_health_meter(CT_NILL, NOTEXTURE_METER)
-	_G.charSelect.character_set_category(CT_NILL, "Squishy Workshop")
+	_G.charSelect.character_set_category(CT_NILL, "nil")
     _G.charSelect.character_add_course_texture(CT_NILL, COURSE_NIL)
 
+    _G.charSelect.character_add_costume(CT_NILL, nil, nil, nil, nil, NIL_2, nil, nil_icon, 1.2)
+    _G.charSelect.character_add_costume(CT_NILL, nil, nil, nil, nil, randommodel, nil, nil_icon, 1.2)
 
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_MARIO_UPDATE, before_NIL_update)
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_FORCE_WATER_ACTION, allowwater)
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, cs_nil_update)
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, iwalkonlava)
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_INTERACT, on_allow_interact)
-    --_G.charSelect.character_hook_moveset(CT_NILL, HOOK_ON_INTERACT, on_interact)
+    _G.charSelect.character_add_menu_instrumental(CT_NILL,audio_stream_load("untitled.ogg"))
+
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_FORCE_WATER_ACTION, allowwater)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_MARIO_UPDATE, before_NIL_update)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_MARIO_UPDATE, nilupdate)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ON_INTERACT, on_interact)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ALLOW_INTERACT, on_allow_interact)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_ON_SET_MARIO_ACTION, nil_chat_hurt)
+    _G.charSelect.character_hook_moveset(CT_NILL, HOOK_BEFORE_SET_MARIO_ACTION, replace_acts)
+
 end
 
 local function on_character_sound(m, sound)
