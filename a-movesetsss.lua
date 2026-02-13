@@ -35,7 +35,7 @@ function the_whole_thing_act(m)
     if m.heldObj ~= nil then
         set_character_animation(m, CHAR_ANIM_IDLE_HEAVY_OBJ)
         if (m.input & INPUT_B_PRESSED ~= 0) then
-            set_mario_action(m, ACT_AIR_THROW, 0)
+            set_mario_action(m, ACT_THROW_AIR_NIL, 0)
         end
     else
         set_character_animation(m, CHAR_ANIM_A_POSE)
@@ -65,10 +65,6 @@ function the_whole_thing_act(m)
     if m.pos.y == m.floorHeight and m.vel.y < 0 then
         m.vel.y = 0
     end
-
-
-
-
 
     if (m.input & INPUT_NONZERO_ANALOG) ~= 0 then
         if s.freecamera then
@@ -100,9 +96,11 @@ function the_whole_thing_act(m)
                 m.forwardVel = m.forwardVel - 2.5
             end
         end
+
         if m.forwardVel <= -32 then
             m.forwardVel = m.forwardVel + 2.5
         end
+
         if s.freecamera then
             if m.controller.stickY > 0 then
                 set_character_animation(m, CHAR_ANIM_WATER_ACTION_END)
@@ -123,6 +121,8 @@ function the_whole_thing_act(m)
             set_character_animation(m, CHAR_ANIM_WATER_ACTION_END)
         end
         if s.freecamera then
+            
+
             if s.VelController < 0 and m.controller.stickX < 0 then
                 s.VelController = s.VelController + 1
             end
@@ -133,10 +133,12 @@ function the_whole_thing_act(m)
             m.vel.z = m.forwardVel * coss(m.faceAngle.y);
         end
     end
+
     if s.freecamera then
         m.vel.x = m.vel.x + (s.sidewaysSpeed + s.VelController) * sins(m.faceAngle.y + 0x4000);
         m.vel.z = m.vel.z + (s.sidewaysSpeed + s.VelController) * coss(m.faceAngle.y + 0x4000);
     end
+
     if (m.input & INPUT_NONZERO_ANALOG) == 0 then
         if s.VelController > 0 then
             s.VelController = s.VelController - 1
@@ -175,7 +177,7 @@ function the_whole_thing_act(m)
     if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
         if s.freecamera == false then
             if m.playerIndex == 0 then
-             set_camera_mode(m.area.camera, CAMERA_MODE_8_DIRECTIONS, 1)
+             set_camera_mode(m.area.camera, -1, 1);
             end
         end
         set_mario_action(m, ACT_FALL_NIL, 0)
@@ -217,6 +219,13 @@ _G.ACT_STANDING_NIL = allocate_mario_action(ACT_FLAG_IDLE | ACT_FLAG_ALLOW_FIRST
 function act_idle_NIL(m)
     local s = nilExtraStates2[m.playerIndex]
 
+        local stepResult = perform_ground_step(m)
+    if (stepResult == GROUND_STEP_LEFT_GROUND) then
+        set_mario_action(m, ACT_FALL_NIL, 0);
+    elseif (stepResult == GROUND_STEP_NONE) then
+        stationary_ground_step(m)
+    end
+
     if m.heldObj ~= nil then
         if (m.input & INPUT_B_PRESSED ~= 0) then
             set_mario_action(m, ACT_THROW_GROUND_NILL, 0)
@@ -249,12 +258,7 @@ function act_idle_NIL(m)
         s.VelController = 0
         set_mario_action(m, ACT_GENERAL_THING, 0);
     end
-    local stepResult = perform_ground_step(m)
-    if (stepResult == GROUND_STEP_LEFT_GROUND) then
-        set_mario_action(m, ACT_FALL_NIL, 0);
-        set_character_animation(m, CHAR_ANIM_GENERAL_FALL);
-    end
-    stop_and_set_height_to_floor(m)
+
 end
 
 hook_mario_action(_G.ACT_STANDING_NIL, act_idle_NIL)
@@ -271,6 +275,10 @@ local function act_walking_NIL(m)
 
     --    timer = timer + 3
 
+        local stepResult = perform_ground_step(m)
+    if (stepResult == GROUND_STEP_LEFT_GROUND) then
+        set_mario_action(m, ACT_FALL_NIL, 0);
+    end
 
     if m.heldObj ~= nil then
         set_mario_anim_with_accel(m, CHAR_ANIM_WALK_WITH_LIGHT_OBJ, accel);
@@ -311,11 +319,6 @@ local function act_walking_NIL(m)
 
 
     interact_w_door(m)
-    local stepResult = perform_ground_step(m)
-    if (stepResult == GROUND_STEP_LEFT_GROUND) then
-        set_mario_action(m, ACT_FALL_NIL, 0);
-        set_character_animation(m, CHAR_ANIM_GENERAL_FALL);
-    end
 end
 hook_mario_action(_G.ACT_WALKING_NIL, act_walking_NIL)
 
@@ -359,7 +362,7 @@ end
 
 
 
-hook_mario_action(_G.ACT_JUMP_NIL, act_jump_NIL, INT_GROUND_POUND)
+hook_mario_action(_G.ACT_JUMP_NIL, act_jump_NIL)
 
 _G.ACT_FALL_NIL = allocate_mario_action(ACT_FLAG_MOVING | ACT_FLAG_AIR |
     ACT_FLAG_CUSTOM_ACTION | ACT_GROUP_AIRBORNE)
@@ -420,6 +423,7 @@ _G.ACT_THROW_GROUND_NILL = allocate_mario_action(ACT_FLAG_MOVING |
     ACT_FLAG_CUSTOM_ACTION)
 
 local function act_ground_throw_nill(m)
+    local s = nilExtraStates2[m.playerIndex]
     set_character_animation(m, CHAR_ANIM_GROUND_THROW)
     m.actionTimer = m.actionTimer + 1
     if m.actionTimer == 7 then
@@ -428,8 +432,39 @@ local function act_ground_throw_nill(m)
     if is_anim_at_end(m) ~= 0 then
         set_mario_action(m, ACT_STANDING_NIL, 0)
     end
+    if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
+        s.VelController = 0
+        set_mario_action(m, ACT_GENERAL_THING, 0);
+    end
 end
 
 
 
 hook_mario_action(_G.ACT_THROW_GROUND_NILL, act_ground_throw_nill)
+
+
+_G.ACT_THROW_AIR_NIL = allocate_mario_action(ACT_FLAG_MOVING | ACT_FLAG_AIR |
+    ACT_FLAG_CUSTOM_ACTION)
+
+local function act_air_throw_nil(m)
+    local s = nilExtraStates2[m.playerIndex]
+
+    set_character_animation(m, CHAR_ANIM_THROW_LIGHT_OBJECT)
+
+    m.actionTimer = m.actionTimer + 1
+
+    if m.actionTimer == 7 then
+        mario_throw_held_object(m)
+    end
+    if is_anim_at_end(m) ~= 0 then
+        set_mario_action(m, ACT_FALL_NIL, 0)
+    end
+    if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
+        s.VelController = 0
+        set_mario_action(m, ACT_GENERAL_THING, 0);
+    end
+end
+
+
+
+hook_mario_action(_G.ACT_THROW_AIR_NIL, act_air_throw_nil)

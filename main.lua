@@ -96,7 +96,7 @@ function nilupdate(m)
         end
     end
     if (obj_has_behavior_id(m.heldObj, id_bhvBowser) ~= 0) then
-        m.angleVel.y = m.forwardVel * 100
+        m.angleVel.y = 20 * 100
     end
 
     if m.playerIndex == 0 then
@@ -106,28 +106,9 @@ function nilupdate(m)
             m.marioObj.header.gfx.scale.z = (math.random(98, 102) / 100)
         end
     end
-if m.playerIndex ~= 0 then
-    if (ONLYMYACTIONS[m.action] ~= true) and ((m.action & ACT_FLAG_CUSTOM_ACTION) == 0) and ((m.action & ACT_GROUP_CUTSCENE) == 0) and KBACTS[m.action] == false then
-        if ((m.action & ACT_FLAG_AIR) ~= 0) then
-            set_mario_action(m, ACT_GENERAL_THING, 0)
-            --djui_chat_message_create("set action to flyng")
-        elseif ((m.action & ACT_FLAG_SWIMMING_OR_FLYING) ~= 0) then
-            set_mario_action(m, ACT_GENERAL_THING, 0)
-            --djui_chat_message_create("set action to flyng")
-        elseif ((m.action & ACT_FLAG_AIR) == 0) then
-            set_mario_action(m, ACT_STANDING_NIL, 0)
-            --djui_chat_message_create("set action to fall")
-        elseif ((m.action & ACT_FLAG_IDLE) ~= 0) then
-            set_mario_action(m, ACT_STANDING_NIL, 0)
-            --djui_chat_message_create("set action to idle")
-        end
-    end
-end
 end
 
 --hook_event(HOOK_MARIO_UPDATE, nilupdate)
-
-
 
 function nocs_nilupdate(m)
     local s = nilExtraStates2[m.playerIndex]
@@ -157,8 +138,17 @@ function nocs_nilupdate(m)
     if m.prevAction == ACT_GENERAL_THING and m.area.camera.mode == CAMERA_MODE_BEHIND_MARIO then
         set_camera_mode(m.area.camera, CAMERA_MODE_8_DIRECTIONS, 1)
     end
-    if m.playerIndex == 0 then
-        if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
+
+    if _G.charSelect.character_get_current_number(m.playerIndex) == CT_NILL then
+        if m.marioObj.header.gfx.animInfo.animID == _G.charSelect.CS_ANIM_MENU then
+            m.marioBodyState.eyeState = 6
+        end
+
+        if m.action == ACT_STAR_DANCE_WATER or m.action == ACT_STAR_DANCE_EXIT or m.action == ACT_STAR_DANCE_NO_EXIT then
+            m.marioBodyState.eyeState = 8
+        end
+
+        if m.playerIndex == 0 then
             if s.moves == false then
                 _G.charSelect.character_add_animations(NIL, niltable)
             end
@@ -172,42 +162,11 @@ function nocs_nilupdate(m)
                 nilmessage("waaaahh... where is my movesetssss!!... :(((")
             end
         end
-        if m.marioObj.header.gfx.animInfo.animID == _G.charSelect.CS_ANIM_MENU then
-            m.marioBodyState.eyeState = 6
-        end
-        if m.action == ACT_STAR_DANCE_WATER or m.action == ACT_STAR_DANCE_EXIT or m.action == ACT_STAR_DANCE_NO_EXIT then
-            m.marioBodyState.eyeState = 8
-        end
     end
 end
 
 hook_event(HOOK_MARIO_UPDATE, nocs_nilupdate)
 
-
-ONLYMYACTIONS = {
-    [ACT_STANDING_NIL] = true,
-    [ACT_WALKING_NIL] = true,
-    [ACT_FALL_NIL] = true,
-    [ACT_LAND_NIL] = true,
-    [ACT_GENERAL_THING] = true,
-    [ACT_JUMP_NIL] = true,
-    [ACT_DISAPPEARED] = true,
-    [ACT_STAR_DANCE_EXIT] = true,
-    [ACT_STAR_DANCE_NO_EXIT] = true,
-    [ACT_STAR_DANCE_WATER] = true,
-    [ACT_CREDITS_CUTSCENE] = true,
-    [ACT_DEATH_EXIT_LAND] = true,
-    [ACT_SQUISHED] = true,
-    [ACT_IN_CANNON] = true,
-    [ACT_TELEPORT_FADE_OUT] = true,
-    [ACT_TELEPORT_FADE_IN] = true,
-    [ACT_PULLING_DOOR] = true,
-    [ACT_PUSHING_DOOR] = true,
-    [ACT_DECELERATING] = true,
-    [ACT_DROWNING] = true,
-    [ACT_AIR_THROW] = true,
-    [ACT_FIRST_PERSON] = true,
-}
 
 function update()
     local playerIndex = 1
@@ -218,12 +177,16 @@ end
 hook_event(HOOK_UPDATE, update)
 
 function before_NIL_update(m)
-    if m.playerIndex ~= 0 then return end
-    if m.action == ACT_IDLE then
-        m.action = ACT_STANDING_NIL
-    end
-    if m.action == ACT_WALKING then
-        m.action = ACT_WALKING_NIL
+    if (ONLYMYACTIONS[m.action] ~= true) and ((m.action & ACT_FLAG_CUSTOM_ACTION) == 0) and ((m.action & ACT_FLAG_METAL_WATER) == 0) and ((m.action & ACT_GROUP_CUTSCENE) == 0) then
+        if ((m.action & ACT_FLAG_AIR) ~= 0) then
+            set_mario_action(m, ACT_FALL_NIL, 0)
+        elseif ((m.action & ACT_FLAG_STATIONARY) ~= 0) then
+            set_mario_action(m, ACT_STANDING_NIL, 0)
+        elseif ((m.action & ACT_FLAG_MOVING) ~= 0) then
+            set_mario_action(m, ACT_WALKING_NIL, 0)
+        elseif ((m.action & ACT_FLAG_SWIMMING_OR_FLYING) ~= 0) then
+            set_mario_action(m, ACT_GENERAL_THING, 0)
+        end
     end
     if (m.action & ACT_FLAG_WATER_OR_TEXT) ~= 0 and m.pos.y < m.waterLevel then
         m.action = ACT_GENERAL_THING
